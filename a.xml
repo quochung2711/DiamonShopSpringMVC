@@ -98,3 +98,24 @@ if (selectedIndex == 1) {
     dialog.show();
 }
 
+
+RadioButton radioButton = findViewById(R.id.radioButton);
+int selectedIndex = 1; // Giả sử selectedIndex có giá trị bằng 1
+
+// Chọn tùy chọn trong RadioButton
+radioButton.setChecked(selectedIndex == 1);
+
+// Kiểm tra giá trị được chọn và đặt sự trì hoãn
+if (selectedIndex == 1) {
+    Handler handler = new Handler();
+    handler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+            // Được gọi sau khoảng thời gian trì hoãn
+            // Đặt các hành động bạn muốn thực hiện sau 15 phút ở đây
+            radioButton.setChecked(true);
+        }
+    }, 15 * 60 * 1000); // 15 phút (15 * 60 * 1000 milliseconds)
+}
+
+
