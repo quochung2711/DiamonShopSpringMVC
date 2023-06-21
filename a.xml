@@ -1,0 +1,100 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Phần bên trái -->
+    <View
+        android:id="@+id/leftView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rightView" />
+
+    <!-- Phần bên phải -->
+    <View
+        android:id="@+id/rightView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toEndOf="@+id/leftView"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+//// phần đánh gía
+<RadioButton
+    android:id="@+id/radioButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_custom_icon"
+            android:paddingRight="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My RadioButton" />
+
+    </LinearLayout>
+
+</RadioButton>
+
+// ví dụ dialog
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thông báo"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nội dung dialog"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"/>
+
+    <!-- Thêm các thành phần khác của giao diện tùy chỉnh của dialog tại đây -->
+
+</LinearLayout>
+
+
+int selectedIndex = 1; // Giả sử selectedIndex có giá trị bằng 1
+
+if (selectedIndex == 1) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    LayoutInflater inflater = LayoutInflater.from(this);
+    View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+    builder.setView(dialogView);
+
+    builder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            // Xử lý sự kiện khi người dùng nhấn nút Đồng ý trong dialog
+        }
+    });
+    builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            // Xử lý sự kiện khi người dùng nhấn nút Hủy trong dialog
+        }
+    });
+    AlertDialog dialog = builder.create();
+    dialog.show();
+}
+
