@@ -118,4 +118,43 @@ if (selectedIndex == 1) {
     }, 15 * 60 * 1000); // 15 phút (15 * 60 * 1000 milliseconds)
 }
 
+using System;
+using Windows.Networking.Connectivity;
+using Windows.Networking;
+
+namespace GetMacAddressUWP
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string macAddress = GetMacAddress();
+            Console.WriteLine("MAC Address: " + macAddress);
+        }
+
+        static string GetMacAddress()
+        {
+            var hostNames = NetworkInformation.GetHostNames();
+
+            foreach (var hostName in hostNames)
+            {
+                if (hostName.Type == HostNameType.Bluetooth || hostName.Type == HostNameType.Ipv4 || hostName.Type == HostNameType.Ipv6)
+                {
+                    var networkAdapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
+                    var networkAdapterId = networkAdapter?.NetworkAdapterId;
+
+                    if (networkAdapterId != null && hostName.IPInformation?.NetworkAdapter.NetworkAdapterId == networkAdapterId)
+                    {
+                        var macAddressBytes = networkAdapter.GetPhysicalAddress();
+                        string macAddress = BitConverter.ToString(macAddressBytes.ToArray()).Replace("-", ":");
+
+                        return macAddress;
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
+    }
+}
 
