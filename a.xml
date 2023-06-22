@@ -1,4 +1,4 @@
-<androidx.constraintlayout.widget.ConstraintLayout
+²<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -155,6 +155,55 @@ namespace GetMacAddressUWP
 
             return string.Empty;
         }
+    }
+}
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
+using Windows.Networking.Connectivity;
+
+class Program
+{
+    static async Task Main()
+    {
+        string macAddress = await GetMacAddress();
+        Console.WriteLine("MAC Address: " + macAddress);
+    }
+
+    static async Task<string> GetMacAddress()
+    {
+        string macAddress = string.Empty;
+
+        string networkAdapterId = GetNetworkAdapterId();
+        if (!string.IsNullOrEmpty(networkAdapterId))
+        {
+            string selector = $"System.Devices.InterfaceClassGuid:=\"{{ad498944-762f-11d0-8dcb-00c04fc3358c}}\" AND System.Devices.InterfaceEnabled:=System.StructuredQueryType.Boolean#True AND System.Devices.InterfaceId:=\"{networkAdapterId}\"";
+            DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(selector, null);
+
+            if (devices.Count > 0)
+            {
+                DeviceInformation device = devices.First();
+                macAddress = device.Properties["System.Devices.DeviceInstanceId"].ToString();
+            }
+        }
+
+        return macAddress;
+    }
+
+    static string GetNetworkAdapterId()
+    {
+        string networkAdapterId = string.Empty;
+        var networkProfile = NetworkInformation.GetInternetConnectionProfile();
+        if (networkProfile != null)
+        {
+            var networkAdapter = networkProfile.NetworkAdapter;
+            if (networkAdapter != null)
+            {
+                networkAdapterId = networkAdapter.NetworkAdapterId.ToString();
+            }
+        }
+        return networkAdapterId;
     }
 }
 
