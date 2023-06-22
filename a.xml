@@ -118,92 +118,39 @@ if (selectedIndex == 1) {
     }, 15 * 60 * 1000); // 15 phút (15 * 60 * 1000 milliseconds)
 }
 
-using System;
 using Windows.Networking.Connectivity;
-using Windows.Networking;
-
-namespace GetMacAddressUWP
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            string macAddress = GetMacAddress();
-            Console.WriteLine("MAC Address: " + macAddress);
-        }
-
-        static string GetMacAddress()
-        {
-            var hostNames = NetworkInformation.GetHostNames();
-
-            foreach (var hostName in hostNames)
-            {
-                if (hostName.Type == HostNameType.Bluetooth || hostName.Type == HostNameType.Ipv4 || hostName.Type == HostNameType.Ipv6)
-                {
-                    var networkAdapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
-                    var networkAdapterId = networkAdapter?.NetworkAdapterId;
-
-                    if (networkAdapterId != null && hostName.IPInformation?.NetworkAdapter.NetworkAdapterId == networkAdapterId)
-                    {
-                        var macAddressBytes = networkAdapter.GetPhysicalAddress();
-                        string macAddress = BitConverter.ToString(macAddressBytes.ToArray()).Replace("-", ":");
-
-                        return macAddress;
-                    }
-                }
-            }
-
-            return string.Empty;
-        }
-    }
-}
-using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.Devices.Enumeration;
-using Windows.Networking.Connectivity;
+using System.Text;
 
-class Program
+namespace UwpApp
 {
-    static async Task Main()
+    public static class MacAddressHelper
     {
-        string macAddress = await GetMacAddress();
-        Console.WriteLine("MAC Address: " + macAddress);
-    }
-
-    static async Task<string> GetMacAddress()
-    {
-        string macAddress = string.Empty;
-
-        string networkAdapterId = GetNetworkAdapterId();
-        if (!string.IsNullOrEmpty(networkAdapterId))
+        public static string GetMacAddress()
         {
-            string selector = $"System.Devices.InterfaceClassGuid:=\"{{ad498944-762f-11d0-8dcb-00c04fc3358c}}\" AND System.Devices.InterfaceEnabled:=System.StructuredQueryType.Boolean#True AND System.Devices.InterfaceId:=\"{networkAdapterId}\"";
-            DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(selector, null);
+            var profiles = NetworkInformation.GetConnectionProfiles();
+            var ethernetProfile = profiles.FirstOrDefault(p => p.IsEthernet && p.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess);
 
-            if (devices.Count > 0)
+            if (ethernetProfile != null)
             {
-                DeviceInformation device = devices.First();
-                macAddress = device.Properties["System.Devices.DeviceInstanceId"].ToString();
-            }
-        }
+                var hardwareAddress = ethernetProfile.GetHardwareAddress();
+                var macAddressBuilder = new StringBuilder();
 
-        return macAddress;
-    }
+                foreach (var octet in hardwareAddress)
+                {
+                    macAddressBuilder.AppendFormat("{0}:", octet.ToString("X2"));
+                }
 
-    static string GetNetworkAdapterId()
-    {
-        string networkAdapterId = string.Empty;
-        var networkProfile = NetworkInformation.GetInternetConnectionProfile();
-        if (networkProfile != null)
-        {
-            var networkAdapter = networkProfile.NetworkAdapter;
-            if (networkAdapter != null)
-            {
-                networkAdapterId = networkAdapter.NetworkAdapterId.ToString();
+                if (macAddressBuilder.Length > 0)
+                {
+                    macAddressBuilder.Length--;
+                }
+
+                return macAddressBuilder.ToString();
             }
+
+            return null; // Trả về null nếu không tìm thấy địa chỉ MAC
         }
-        return networkAdapterId;
     }
 }
 
