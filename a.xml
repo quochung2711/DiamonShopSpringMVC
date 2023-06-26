@@ -154,3 +154,29 @@ namespace UwpApp
     }
 }
 
+using System.Diagnostics;
+using System.Threading.Tasks;
+
+public static async Task<string> GetMacAddress()
+{
+    string macAddress = string.Empty;
+    ProcessStartInfo processInfo = new ProcessStartInfo
+    {
+        FileName = "powershell.exe",
+        Arguments = "Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | Get-NetAdapterStatistics | Select-Object -ExpandProperty MacAddress",
+        RedirectStandardOutput = true,
+        UseShellExecute = false,
+        CreateNoWindow = true
+    };
+
+    using (Process process = Process.Start(processInfo))
+    {
+        if (process != null)
+        {
+            await process.WaitForExitAsync();
+            macAddress = await process.StandardOutput.ReadToEndAsync();
+        }
+    }
+
+    return macAddress.Trim();
+}
