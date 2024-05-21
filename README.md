@@ -19,3 +19,17 @@
 ### doOnTerminate(onTerminate): Thực hiện một hành động khi Observable hoàn thành hoặc xảy ra lỗi.
 ### doFinally(onFinally): Thực hiện một hành động cuối cùng sau khi Observable hoàn thành, xảy ra lỗi hoặc bị hủy.
 ### doOnEach(onNotification): Thực hiện một hành động khi nhận được bất kỳ sự kiện nào (giá trị tiếp theo, lỗi, hoàn thành, đăng ký, hủy).
+
+
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+
+        JsonArray dataArray = jsonObject.getAsJsonArray("data");
+        dataArray.sort(Comparator.comparing(e -> e.getAsJsonObject().get("label").getAsString()));
+
+        JsonObject result = new JsonObject();
+        result.add("core", jsonObject.getAsJsonObject("core"));
+        result.add("data", dataArray);
+
+        String sortedJson = gson.toJson(result);
+        System.out.println(sortedJson);
